@@ -8,7 +8,7 @@
         <version>2.0.3.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>com.lk.</groupId>
+    <groupId>com.lk</groupId>
     <artifactId>es</artifactId>
     <version>1.0.0</version>
     <name>es</name>
