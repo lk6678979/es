@@ -18,9 +18,13 @@ public class EsApplicationTests {
 
     @Test
     public void testCreateIndex() {
+        elasticsearchTemplate.putMapping(Item.class);
+    }
+
+    @Test
+    public void putMapping() {
         elasticsearchTemplate.createIndex(Item.class);
         elasticsearchTemplate.putMapping(Item.class);
-        elasticsearchTemplate.map
     }
 
     @Test
