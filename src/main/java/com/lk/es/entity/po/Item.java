@@ -34,7 +34,7 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
  * ·analyzer：分词器名称，这里的ik_max_word即使用ik分词器
  */
 @Data
-@Document(indexName = "item", type = "docs", shards = 3, replicas = 2)
+@Document(indexName = "item", type = "docs", shards = 1, replicas = 0)
 public class Item {
     /**
      * 主键ID

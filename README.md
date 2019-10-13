@@ -142,7 +142,7 @@ public class Item {
    @Autowired
    private ElasticsearchTemplate elasticsearchTemplate;
 ```
-## 3 API介绍
+## 3 索引操作
 ### 3.1 创建索引
 * 注意：只会创建空索引，不会设置mapping，需要单调调用putMapping
 ```java
@@ -161,3 +161,29 @@ boolean createIndex(String indexName, Object settings);
 <T> boolean createIndex(Class<T> clazz, Object settings);
 ```
 
+### 3.2 映射字段
+```java
+
+//根据配置好映射关系的类对象，设置字段映射
+<T> boolean putMapping(Class<T> clazz);
+
+//根据索引名称，文档类型和mapping对象，设置字段映射
+boolean putMapping(String indexName, String type, Object mapping);
+
+//根据包含索引映射的class和mapping对象，设置字段映射
+<T> boolean putMapping(Class<T> clazz, Object mapping);
+
+```
+
+### 3.3 删除索引
+```java
+
+//根据配置好映射关系的类对象，删除索引
+<T> boolean deleteIndex(Class<T> clazz);
+
+//根据索引名称删除索引
+boolean deleteIndex(String indexName);
+
+```
+
+## 4. 新增文档数据（使用ElasticsearchCrudRepository实现）
