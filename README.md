@@ -1,4 +1,4 @@
-# Sprinboot2.0.3整合Elasticsearch
+# Sprinboot2.0.3整合Elasticsearch(基于TCP的TransportClient方式实现，ES7后不支持）
 
 ## 1. 搭建基础项目
 
@@ -144,11 +144,12 @@ public class Item {
 ```
 ## 3 API介绍
 ### 3.1 创建索引
+`` 注意：只会创建空索引，不会设置mapping，需要单调调用putMapping
 ```java
 //根据配置好映射关系的类对象，创建索引（反射获取到注解中的参数去创建索引）
 <T> boolean createIndex(Class<T> clazz);
 
-//指定索引名创建索引，创建出的所有没有属性，需要再调用elasticsearchTemplate.putMapping来完善配置信息
+//指定索引名创建索引，创建出的所有没有属性
 boolean createIndex(String indexName);
 
 //指定索引名和配置创建索引
