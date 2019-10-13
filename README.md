@@ -104,7 +104,8 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 @Document(indexName = "item", type = "docs", shards = 3, replicas = 2)
 public class Item {
     /**
-     * 主键ID
+     * @Description: @Id注解必须是springframework包下的
+     * org.springframework.data.annotation.Id
      */
     @Id
     private Long id;
@@ -136,57 +137,20 @@ public class Item {
     private String images;
 }
 ```
-### 2.2 创建3个配置文件，applycation-one.yml,applycation-two.yml,applycation-three.yml(用于注册中心高可用集群)，其中一个配置文件如下，3个配置文件指定不同的server.port，并在defaultZone中配置其他2个yml启动的服务器的ip端口
-```yml
-server:
-  #服务启动端口号
-  port: 8806
-spring:
-  #服务名称
-  application:
-    name: eureka-server
-#eureka服务注册发现中心配置
-eureka:
-  #服务配置
-  server:
-    #是否启用注册中心的保护机制，Eureka 会统计15分钟之内心跳失败的比例低于85%将会触发保护机制，不剔除服务提供者，如果关闭服务注册中心将不可用的实例正确剔除
-    enable-self-preservation: false
-  instance:
-    #是否使用ip注册（默认使用域名注册）
-    preferIpAddress: true
-    #健康检查页面的URL，1.X版本默认/health，2.X版本默认/actuator/health，一般不需要更改
-    health-check-url-path: /actuator/health
-  client:
-    #是否将注册中心本身也注册到注册中心中
-    registerWithEureka: true
-    #此客户端是否获取eureka服务器注册表上的注册信息（注册中心不会去调用其他服务，所以不需要获取注册信息）
-    fetchRegistry: false
-    serviceUrl:
-      #注册中心URL，配置需要注入的配置中心，如果有2个注册中心则需要配置2个，如果有3个，则只需要注入除自己的另外2个
-      defaultZone: http://127.0.0.1:8807/eureka/,http://127.0.0.1:8807/eureka/
-management:
-  endpoints:
-    web:
-      exposure:
-        #开放所有页面节点  默认只开启了health、info两个节点
-        include: "*"
-  endpoint:
-    health:
-      #显示健康具体信息  默认不会显示详细信息
-      show-details: ALWAYS
+### 2.3 ElasticsearchTemplate中提供了操作ES的完整API
 ```
-### 2.3 启动
-#### 2.3.1 使用maven打包项目
-#### 2.3.2 启动jar
-依次执行下面指令启动3个集群的注册中心：  
-	java -jar eureka-server-1.0.0.jar --spring.profiles.active=one  
-	java -jar eureka-server-1.0.0.jar --spring.profiles.active=two  
-	java -jar eureka-server-1.0.0.jar --spring.profiles.active=three  
-## 2.4可视化界面
-在浏览器依次打开:  
-http://127.0.0.1:8806/  
-http://127.0.0.1:8807/  
-http://127.0.0.1:8808/  
-界面效果如下：
-![](https://github.com/lk6678979/image/blob/master/spring-cloud/eureka-ui.png)  
+   @Autowired
+   private ElasticsearchTemplate elasticsearchTemplate;
+```
+## 3 API介绍
+### 3.1 创建索引
+```
+<T> boolean createIndex(Class<T> clazz);
+
+boolean createIndex(String indexName);
+
+boolean createIndex(String indexName, Object settings);
+
+<T> boolean createIndex(Class<T> clazz, Object settings);
+```
 	
