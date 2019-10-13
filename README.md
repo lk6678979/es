@@ -148,14 +148,15 @@ public class Item {
 //根据配置好映射关系的类对象，创建索引（反射获取到注解中的参数去创建索引）
 <T> boolean createIndex(Class<T> clazz);
 
-//指定索引名创建索引
+//指定索引名创建索引，创建出的所有没有属性，需要再调用elasticsearchTemplate.putMapping来完善配置信息
 boolean createIndex(String indexName);
 
 //指定索引名和配置创建索引
+//setting支持3种类型数据：string，map，XContentBuilder，一般使用map的kv格式设置配置
 boolean createIndex(String indexName, Object settings);
 
 //根据配置好映射关系的类对象，并制定相关配置，创建索引（反射获取到注解中的参数去创建索引）
-//setting支持3种类型数据：string，map，XContentBuilder
+//setting支持3种类型数据：string，map，XContentBuilder，一般使用map的kv格式设置配置
 <T> boolean createIndex(Class<T> clazz, Object settings);
 ```
 
