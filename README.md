@@ -144,7 +144,7 @@ public class Item {
 ```
 ## 3 API介绍
 ### 3.1 创建索引
-·· 注意：只会创建空索引，不会设置mapping，需要单调调用putMapping
+* 注意：只会创建空索引，不会设置mapping，需要单调调用putMapping
 ```java
 //根据配置好映射关系的类对象，创建索引（反射获取到注解中的参数去创建索引）
 <T> boolean createIndex(Class<T> clazz);
