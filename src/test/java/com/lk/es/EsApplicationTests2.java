@@ -61,11 +61,11 @@ public class EsApplicationTests2 {
     @Test
     public void test2() {
         NativeSearchQueryBuilder queryBuilder = new NativeSearchQueryBuilder();
-        queryBuilder.withIndices("real-time-monitor-*");
+        queryBuilder.withIndices("data-synchro-*");
         queryBuilder.withTypes("logs");
         // 添加基本分词查询
         queryBuilder.withQuery(QueryBuilders.matchQuery("level", "ERROR"));
-        queryBuilder.withQuery(QueryBuilders.matchQuery("message", "E0004:"));//数据同步E1000:
+//        queryBuilder.withQuery(QueryBuilders.matchQuery("message", "E0004:"));//数据同步E1000:
         // 排序
         queryBuilder.withSort(SortBuilders.fieldSort("@timestamp").order(SortOrder.ASC));
         // 分页：
