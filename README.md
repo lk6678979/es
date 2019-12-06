@@ -301,3 +301,212 @@ elasticsearch中本没有修改，它的修改原理是该是先删除在新增
 ### 5.1 基本查询
 ElasticsearchRepository提供了一些基本的查询方法：
 ![](https://github.com/lk6678979/image/blob/master/es-1.jpg)
+* 我们来试试查询所有：
+```
+    // 查找所有
+    //Iterable<Item> list = this.itemRepository.findAll();
+    // 对某字段排序查找所有 Sort.by("price").descending() 降序
+    // Sort.by("price").ascending():升序
+    @Test
+    public void query() {
+        Iterable<Item> list = this.itemRepository.findAll(Sort.by("price").ascending());
+
+        for (Item item : list) {
+            System.out.println(item);
+        }
+    }
+```
+### 5.2 自定义方法
+Spring Data 的另一个强大功能，是根据方法名称自动实现功能。  
+比如：你的方法名叫做：findByTitle，那么它就知道你是根据title查询，然后自动帮你完成，无需写实现类。  
+当然，方法名称要符合一定的约定：  
+![](https://github.com/lk6678979/image/blob/master/es-2.jpg)
+例如，我们来按照价格区间查询，定义这样的一个方法：
+```java
+ublic interface ItemRepository extends ElasticsearchRepository<Item,Long> {
+
+    /**
+     * @Description:根据价格区间查询
+     * @Param price1
+     * @Param price2
+     * @Author: https://blog.csdn.net/chen_2890
+     */
+    List<Item> findByPriceBetween(double price1, double price2);
+}
+```
+不需要写实现类，然后我们直接去运行：
+```java
+    /**
+     * @Description:按照价格区间查询
+     */
+    @Test
+    public void queryByPriceBetween(){
+        List<Item> list = this.itemRepository.findByPriceBetween(2000.00, 6000.00);
+        for (Item item : list) {
+            System.out.println("item = " + item);
+        }
+    }
+```
+### 5.3 自定义查询
+```java
+ /**
+     * @Description:matchQuery底层采用的是词条匹配查询
+     */
+    @Test
+    public void testMatchQuery(){
+        // 构建查询条件
+        NativeSearchQueryBuilder queryBuilder = new NativeSearchQueryBuilder();
+        // 添加基本分词查询
+        queryBuilder.withQuery(QueryBuilders.matchQuery("title", "地方"));
+        // 搜索，获取结果
+        Page<Item> items = this.itemRepository.search(queryBuilder.build());
+        // 总条数
+        long total = items.getTotalElements();
+        System.out.println("total = " + total);
+        for (Item item : items) {
+            System.out.println(item);
+        }
+    }
+```
+* NativeSearchQueryBuilder：Spring提供的一个查询条件构建器，帮助构建json格式的请求体
+* QueryBuilders.matchQuery(“title”, “地方”)：利用QueryBuilders来生成一个查询。QueryBuilders提供了大量的静态方法，用于生成各种不同类型的查询，和ES的http请求中的查询方式一一对应
+* Page<item>：默认是分页查询，因此返回的是一个分页的结果对象，包含属性：
+![](https://github.com/lk6678979/image/blob/master/es-3.jpg)
+	
+### 5.4 测试代码
+```java
+/**
+     *
+     *@Description:matchQuery
+     *@Author: https://blog.csdn.net/chen_2890
+     */
+    @Test
+    public void testMathQuery(){
+        // 创建对象
+        NativeSearchQueryBuilder queryBuilder = new NativeSearchQueryBuilder();
+        // 在queryBuilder对象中自定义查询
+        //matchQuery:底层就是使用的termQuery
+        queryBuilder.withQuery(QueryBuilders.matchQuery("title","坚果"));
+        //查询，search 默认就是分页查找
+        Page<Item> page = this.itemRepository.search(queryBuilder.build());
+        //获取数据
+        long totalElements = page.getTotalElements();
+        System.out.println("获取的总条数:"+totalElements);
+
+        for(Item item:page){
+            System.out.println(item);
+        }
+    }
+
+
+    /**
+     * @Description:
+     * termQuery:功能更强大，除了匹配字符串以外，还可以匹配
+     * int/long/double/float/....		
+     */
+    @Test
+    public void testTermQuery(){
+        NativeSearchQueryBuilder builder = new NativeSearchQueryBuilder();
+        builder.withQuery(QueryBuilders.termQuery("price",998.0));
+        // 查找
+        Page<Item> page = this.itemRepository.search(builder.build());
+
+        for(Item item:page){
+            System.out.println(item);
+        }
+    }
+    
+    /**
+     * @Description:布尔查询		
+     */
+    @Test
+    public void testBooleanQuery(){
+        NativeSearchQueryBuilder builder = new NativeSearchQueryBuilder();
+
+        builder.withQuery(
+                QueryBuilders.boolQuery().must(QueryBuilders.matchQuery("title","华为"))
+                                         .must(QueryBuilders.matchQuery("brand","华为"))
+        );
+
+        // 查找
+        Page<Item> page = this.itemRepository.search(builder.build());
+        for(Item item:page){
+            System.out.println(item);
+        }
+    }
+
+	/**
+     * @Description:模糊查询		
+     */
+    @Test
+    public void testFuzzyQuery(){
+        NativeSearchQueryBuilder builder = new NativeSearchQueryBuilder();
+        builder.withQuery(QueryBuilders.fuzzyQuery("title","faceoooo"));
+        Page<Item> page = this.itemRepository.search(builder.build());
+        for(Item item:page){
+            System.out.println(item);
+        }
+
+    }
+```
+### 5.5 分页查询
+利用NativeSearchQueryBuilder可以方便的实现分页(可以发现，Elasticsearch中的分页是从第0页开始)：
+```java
+/**
+     * @Description:分页查询		
+     */
+	@Test
+	public void searchByPage(){
+	    // 构建查询条件
+	    NativeSearchQueryBuilder queryBuilder = new NativeSearchQueryBuilder();
+	    // 添加基本分词查询
+	    queryBuilder.withQuery(QueryBuilders.termQuery("title", "地方"));
+	    // 分页：
+	    int page = 0;
+	    int size = 2;
+	    queryBuilder.withPageable(PageRequest.of(page,size));
+	
+	    // 搜索，获取结果
+	    Page<Item> items = this.itemRepository.search(queryBuilder.build());
+	    // 总条数
+	    long total = items.getTotalElements();
+	    System.out.println("总条数 = " + total);
+	    // 总页数
+	    System.out.println("总页数 = " + items.getTotalPages());
+	    // 当前页
+	    System.out.println("当前页：" + items.getNumber());
+	    // 每页大小
+	    System.out.println("每页大小：" + items.getSize());
+	
+	    for (Item item : items) {
+	        System.out.println(item);
+	    }
+	}
+```
+### 5.6 排序
+排序也通用通过NativeSearchQueryBuilder完成：
+```java
+/**
+     * @Description:排序查询	
+     */
+	@Test
+	public void searchAndSort(){
+	    // 构建查询条件
+	    NativeSearchQueryBuilder queryBuilder = new NativeSearchQueryBuilder();
+	    // 添加基本分词查询
+            queryBuilder.withQuery(QueryBuilders.termQuery("title", "地方"));
+	
+	    // 排序
+	    queryBuilder.withSort(SortBuilders.fieldSort("price").order(SortOrder.ASC));
+	
+	    // 搜索，获取结果
+	    Page<Item> items = this.itemRepository.search(queryBuilder.build());
+	    // 总条数
+	    long total = items.getTotalElements();
+	    System.out.println("总条数 = " + total);
+	
+	    for (Item item : items) {
+	        System.out.println(item);
+	    }
+	}
+```
