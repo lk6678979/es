@@ -187,7 +187,9 @@ boolean deleteIndex(String indexName);
 ```
 
 ## 4. 新增文档数据（继承ElasticsearchRepository）
-* 源码
+### 4.1 Repository接口
+Spring Data 的强大之处，就在于你不用写任何DAO处理，自动根据方法名或类的信息进行CRUD操作。只要你定义一个接口，然后继承Repository提供的一些子接口，就能具备各种基本的CRUD功能。
+来看下ElasticsearchCrudRepository接口：
 ```java
 package org.springframework.data.elasticsearch.repository;
 
@@ -223,3 +225,79 @@ public interface ElasticsearchRepository<T, ID extends Serializable> extends Ela
 	Class<T> getEntityClass();
 }
 ```
+所以，我们只需要定义接口，然后继承它就OK了。
+```java
+/**
+      * @Description:定义ItemRepository 接口
+      * @Param:
+      * 	Item:为实体类
+      * 	Long:为Item实体类中主键的数据类型
+      * @Author: https://blog.csdn.net/chen_2890
+      * @Date: 2018/9/29 0:50
+       */	 
+public interface ItemRepository extends ElasticsearchRepository<Item,Long> {
+
+}
+```
+接下来，我们测试新增数据：
+
+### 4.2 新增一个对象
+```java
+@Autowired
+private ItemRepository itemRepository;
+
+ @Test
+    public void insert() {
+        Item item = new Item();
+        item.setId(4L);
+        item.setPrice(55.09D);
+        item.setCategory("组织组织sfaassd");
+        item.setBrand("g3123第三方dgh1212");
+        item.setTitle("地方个花哥哈哈");
+        item.setImages("65阿萨德的");
+        itemRepository.save(item);
+    }
+```
+### 4.3 批量增加多个
+```java
+@Autowired
+private ItemRepository itemRepository;
+
+ @Test
+    public void insertList() {
+        Item item = new Item();
+        item.setId(11L);
+        item.setPrice(5995.09D);
+        item.setCategory("");
+        item.setBrand("g3123第三方dgh1212");
+        item.setTitle("地方个花哥哈哈");
+        item.setImages("65阿萨德的");
+        Item item2 = new Item();
+        item2.setId(12L);
+        item2.setPrice(54345.09D);
+        item2.setCategory("123faassd");
+        item2.setBrand("zzzz方dgh1212");
+        item2.setTitle("地方个花12哈哈");
+        item2.setImages("65阿萨德的");
+        Item item3 = new Item();
+        item3.setId(13L);
+        item3.setPrice(5645.09D);
+        item3.setCategory("124织124sfaassd");
+        item3.setBrand("xcw213第三方dgh1212");
+        item3.setTitle("768哥哈哈");
+        item3.setImages("xxx的");
+        List<Item> list = new ArrayList<>();
+        list.add(item);
+        list.add(item2);
+        list.add(item3);
+        itemRepository.saveAll(list);
+    }
+```
+### 4.4 修改
+elasticsearch中本没有修改，它的修改原理是该是先删除在新增
+
+修改和新增是同一个接口save，区分的依据就是id。save根据id会去覆盖同id的数据
+## 5. 查询
+### 5.1 基本查询
+ElasticsearchRepository提供了一些基本的查询方法：
+![](https://github.com/lk6678979/image/blob/master/es-1.jpg)

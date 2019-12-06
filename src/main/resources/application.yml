@@ -4,4 +4,4 @@ spring:
       #可以通过es的9200端口查询，例如http://elk01:9200
       cluster-name: my_cluster
       #es节点，都好分割多个节点，端口号9300
-      cluster-nodes: 47.106.135.182:9300
+      cluster-nodes: elk01:9300,elk02:9300,elk03:9300
