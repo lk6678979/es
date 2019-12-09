@@ -1,5 +1,8 @@
 package com.lk.es;
 
+import com.lk.es.entity.po.CompressClassEnum;
+import com.lk.es.entity.po.ElkHdfsUriDto;
+import org.apache.http.client.utils.DateUtils;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
@@ -9,6 +12,7 @@ import org.elasticsearch.search.sort.SortOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -26,6 +30,18 @@ public class EsApplicationTests2 {
 
     @Autowired
     private ElasticsearchTemplate elasticsearchTemplate;
+
+    /**
+     * HDFS压缩方式class
+     */
+    @Value("${business.hdfsCompressClass:''}")
+    private String hdfsCompressClass;
+
+    /**
+     * HDFS压缩是否需要压缩
+     */
+    @Value("${business.hdfsNeedCompress:1}")
+    private String hdfsNeedCompress;
 
     @Test
     public void test() {
@@ -65,7 +81,7 @@ public class EsApplicationTests2 {
         queryBuilder.withTypes("logs");
         // 添加基本分词查询
         queryBuilder.withQuery(QueryBuilders.matchQuery("level", "ERROR"));
-//        queryBuilder.withQuery(QueryBuilders.matchQuery("message", "E0004:"));//数据同步E1000:
+        queryBuilder.withQuery(QueryBuilders.matchQuery("message", "E1000:"));//数据同步E1000:
         // 排序
         queryBuilder.withSort(SortBuilders.fieldSort("@timestamp").order(SortOrder.ASC));
         // 分页：
@@ -85,8 +101,15 @@ public class EsApplicationTests2 {
                     String _id = item.getId();//ID
                     String _index = item.getIndex();//索引
                     Map<String, Object> _source = item.getSource();//数据
+                    System.out.println(_source);
+                    //写入hdfs的文件内容
+                    String hdfsFileStr = _source.get("message").toString().replace("E1000:", "");
+                    String timestamp = hdfsFileStr.split("\\|", -1)[0];
+                    Calendar timestampC = Calendar.getInstance();
+                    timestampC.setTime(new Date(Long.parseLong(timestamp)));
+                    //写入hdfs的文件路径
                     //TODO 将数据写到HDFS并且删除数据
-                    elasticsearchTemplate.delete(_index, "logs", _id);
+//                    elasticsearchTemplate.delete(_index, "logs", _id);
                 }
                 return null;
             }
