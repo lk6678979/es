@@ -1,0 +1,17 @@
+spring:
+  data:
+    elasticsearch:
+      #可以通过es的9200端口查询，例如http://elk01:9200
+      cluster-name: my_cluster
+      #es节点，都好分割多个节点，端口号9300
+      cluster-nodes: elk01:9300,elk02:9300,elk03:9300
+  elasticsearch:
+    rest:
+      #es节点，都好分割多个节点，端口号9200
+      cluster-nodes: elk01:9200,elk02:9200,elk03:9200
+      #连接超时是时间
+      connect-timeout: 5000
+      #套接字连接超时是时间
+      socket-timeout: 60000
+      #异步请求线程数
+      io-thread-count: 1

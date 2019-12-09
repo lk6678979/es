@@ -5,6 +5,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>es-spring-data</module>
+        <module>es-restfull</module>
     </modules>
     <parent>
         <groupId>org.springframework.boot</groupId>
