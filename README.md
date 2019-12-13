@@ -1,4 +1,4 @@
-# Elasticsearch Java API实现方式
+# Elasticsearch Java API实现方式 
 ## 1. 传输客户端（Transport client）
   传输客户端作为一种轻量级客户端，本身不加入集群，只是简单的发送请求到远端集群中的节点,作为一个集群和应用程序之间的通信层。它知道 API 并能自动帮你在节点之间轮询，帮你嗅探集群等等。但它是集群 外部的 ，和 REST 客户端类似。我们访问的节点负责收集各节点返回的数据（query fetch merge），最后一起返回给客户端。构造transportClient时候，需要指定sniff是否为true。Transport是连接到Elasticsearch的本地方法之一。它是官方Elasticsearch分发的一部分，因此需要客户端用Java编写（或至少在JVM上运行）。 它非常快，在JVM上本机运行。序列化是有效的，发送到/从Elasticsearch实例的消息和操作中几乎没有开销。它需要保持Elasticsearch服务器和客户端版本有些同步。在Elasticsearch 1.0之前，将需要完全相同的版本，但较新的版本（1.0和更高版本）支持版本之间的交互。由于异常序列化和更新之间的其他潜在细微差异，在客户端和服务器上运行相同的JVM更新版本也是有益的。 目前不支持加密或身份验证，但是宣布不久会满足这些需求。要在Found.no托管集群上使用传输客户端，可以使用elasticsearch自定义传输模块，该模块负责加密，身份验证和保持活动。
 ```xml
