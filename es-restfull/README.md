@@ -530,7 +530,7 @@ public String deleteData(String id) throws IOException{
                 id);
         DeleteResponse deleteResponse =  client.delete(deleteRequest);
         return deleteResponse.getResult().toString();
-    }
+    } 
 ```
 
 
