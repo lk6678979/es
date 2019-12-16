@@ -7,7 +7,6 @@ https://www.elastic.co/guide/en/elasticsearch/client/java-rest/current/java-rest
 也可直接去``https://start.spring.io/``下载包含依赖的项目
 
 ### 1.2 创建完的工程pom.xml文件中的依赖如下：
-
 ```xml
  <!-- 继承springboot项目-->
    <parent>
@@ -43,6 +42,12 @@ https://www.elastic.co/guide/en/elasticsearch/client/java-rest/current/java-rest
             <groupId>org.elasticsearch.client</groupId>
             <artifactId>elasticsearch-rest-high-level-client</artifactId>
             <version>${elasticsearch.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.elasticsearch</groupId>
+                    <artifactId>elasticsearch</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.elasticsearch</groupId>
@@ -77,7 +82,7 @@ https://www.elastic.co/guide/en/elasticsearch/client/java-rest/current/java-rest
         </plugins>
     </build>
 ```
-
+* 注意：springboot有默认的elasticsearch.version版本号，需要小心被boot的低版本号覆盖，最好自己指定pom中jar的版本，不要使用boot的maven配置的默认版本号
 ## 2.代码编写
 ### 2.1 添加ES所需配置
 ```yml

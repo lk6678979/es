@@ -3,6 +3,7 @@ package com.lk.es.restfull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpHost;
@@ -27,6 +28,7 @@ import java.util.Objects;
 @AllArgsConstructor
 @NoArgsConstructor
 @Configuration
+@Slf4j
 public class ElasticsearchRestClientConfig {
 
     /**
@@ -38,19 +40,19 @@ public class ElasticsearchRestClientConfig {
     /**
      * 连接超时是时间
      */
-    @Value("${spring.elasticsearch.rest.connect-timeout}")
+    @Value("${spring.elasticsearch.rest.connect-timeout:5000}")
     private int connectTimeout;
 
     /**
      * 套接字连接超时是时间
      */
-    @Value("${spring.elasticsearch.rest.socket-timeout}")
+    @Value("${spring.elasticsearch.rest.socket-timeout:60000}")
     private int socketTimeout;
 
     /**
      * 异步请求线程数
      */
-    @Value("${spring.elasticsearch.rest.io-thread-count}")
+    @Value("${spring.elasticsearch.rest.io-thread-count:1}")
     private int ioThreadCount;
 
     private static final int ES_IPADDRS_LENGTH = 2;
@@ -74,7 +76,7 @@ public class ElasticsearchRestClientConfig {
             @Override
             public void onFailure(Node node) {
                 super.onFailure(node);
-                System.out.println(node.getName() + "==节点失败了");
+                log.error(node.getName() + "==节点失败了");
             }
         });
 
