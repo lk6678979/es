@@ -21,6 +21,7 @@
       <version>5.0.2</version>
     </dependency>
 ```
+* 参考项目 https://github.com/lk6678979/es/tree/master/es-restfull
 ## 3. Jest
 Jest是ElasticSearch的Java HTTP Rest客户端。 Jest填补了 ElasticSearch 缺少 Http Rest接口 客户端的空白。 
 通过Maven编译实现，需要设定好不同的版本。现在pom.xml最新的Elasticsearch版本为5.3.3（2017年5月27日），5.3.3的API向ES2.3.4插入索引数据，不能保障数据正常插入，且没有报错。
