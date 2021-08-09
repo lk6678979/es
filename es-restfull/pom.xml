@@ -12,7 +12,7 @@
     <artifactId>es-restfull</artifactId>
 
     <properties>
-        <elasticsearch.version>7.3.1</elasticsearch.version>
+        <elasticsearch.version>7.13.3</elasticsearch.version>
         <commons-lang3.version>3.5</commons-lang3.version>
     </properties>
     <dependencies>
